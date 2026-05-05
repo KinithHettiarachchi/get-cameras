@@ -1,0 +1,35 @@
+📷 GetCameras - Quick Reference
+================================
+
+🚀 BUILD:
+  .\build.bat
+
+📍 OUTPUT:
+  bin\Release\net10.0-windows\win-x64\publish\GetCameras.exe
+
+▶️ RUN:
+  GetCameras.exe
+
+📋 OUTPUT FORMAT:
+  CameraName~~Resolution1~~Resolution2...
+
+💾 SAVE TO FILE:
+  GetCameras.exe > cameras.txt
+
+📦 FILE SIZE:
+  ~36 MB (self-contained, no .NET required)
+
+🎯 INTEGRATION:
+  - Java: Runtime.getRuntime().exec("GetCameras.exe")
+  - Python: subprocess.run(['GetCameras.exe'])
+  - PowerShell: & ".\GetCameras.exe"
+  - C#: Process.Start("GetCameras.exe")
+
+📚 FULL DOCS:
+  See README.md
+
+✅ TESTED:
+  ✓ Builds successfully
+  ✓ Single executable
+  ✓ No dependencies
+  ✓ Works on clean Windows machines
