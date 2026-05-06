@@ -1,353 +1,157 @@
-# 📷 GetCameras
+﻿# 📷 GetCameras - Complete Camera Enumeration Solution
 
-> A lightweight Windows utility to enumerate all available cameras and their supported resolutions.
-
-## 🎯 Purpose
-
-GetCameras is a command-line tool that detects all video capture devices (cameras) connected to your Windows system and lists their supported resolutions with frame rates. Perfect for:
-
-- 🔍 **Camera Discovery** - Find all connected cameras instantly
-- 📊 **Resolution Testing** - See what resolutions each camera supports
-- 🔌 **Integration** - Easy to integrate with Java, Python, or any language via command-line
-- 🚀 **Portable** - Single executable, no installation required
+> Enumerate Windows cameras and their supported resolutions - Available as both EXE and DLL
 
 ---
 
-## ✨ Features
+## 🎯 Two Solutions Available
 
-- ✅ **Self-Contained** - No .NET runtime installation required
-- ✅ **Single Executable** - Everything bundled in one .exe file (~36 MB)
-- ✅ **Fast** - Instant camera enumeration
-- ✅ **Simple Output** - Clean, parseable format
-- ✅ **Cross-Language** - Works with Java, Python, PowerShell, C#, etc.
-- ✅ **No Admin Required** - Runs with standard user privileges
+### 🔷 GetCameras.exe (.NET) - Ready to Use ✅
+- **Size:** ~36 MB (self-contained)
+- **Java:** Via `Runtime.exec()`
+- **Status:** Already built and ready
+- **Location:** `GetCameras/bin/Release/net10.0-windows/win-x64/publish/GetCameras.exe`
+
+### 🔶 GetCamerasNative.dll (C++) - Requires Build
+- **Size:** ~50-100 KB
+- **Java:** Via JNA (direct DLL call)
+- **Status:** Requires Visual Studio C++ tools
+- **Location:** `GetCamerasNative/` (after building)
 
 ---
 
-## 📥 Quick Start
+## 📋 Output Format
 
-### 💻 Command Line Usage
-
-Simply run the executable:
-
-```cmd
-GetCameras.exe
+```
+CameraName~~Resolution1~~Resolution2...
 ```
 
-**Example Output:**
+Example:
 ```
-DroidCam Video~~2560x1440@30fps~~1920x1080@30fps~~1280x720@30fps~~640x480@30fps
-Integrated Camera~~2560x1440@30fps~~1920x1080@30fps~~1280x720@30fps~~640x480@30fps
-OBS Virtual Camera~~1920x1080@60fps
-```
-
-### 📋 Output Format
-
-Each line represents one camera:
-```
-CameraName~~Resolution1~~Resolution2~~Resolution3...
-```
-
-- **`~~`** separates the camera name from resolutions
-- **`~~`** separates each resolution
-- Format: `WidthxHeight@FPSfps`
-
-### 💾 Save to File
-
-```cmd
-GetCameras.exe > cameras.txt
+HD Pro Webcam~~1920x1080@30fps~~1280x720@30fps~~640x480@30fps
 ```
 
 ---
 
-## 🔧 Building from Source
+## 🚀 Quick Start
 
-### Prerequisites
+### Using GetCameras.exe (Ready Now!)
 
-- 🛠️ .NET 10 SDK
-- 🪟 Windows OS
-- 💻 Visual Studio 2026 (optional)
-
-### Option 1: Using Build Script (Easiest)
-
+**Command Line:**
 ```cmd
+GetCameras\bin\Release\net10.0-windows\win-x64\publish\GetCameras.exe
+```
+
+**From Java:**
+```java
+Process p = Runtime.getRuntime().exec("GetCameras.exe");
+BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+String line;
+while ((line = r.readLine()) != null) {
+    String[] parts = line.split("~~");
+    // parts[0] = camera name, parts[1+] = resolutions
+}
+```
+
+---
+
+## 🔨 Building
+
+### Build EXE:
+```cmd
+cd GetCameras
 build.bat
 ```
 
-This will:
-1. Clean previous builds
-2. Publish a self-contained executable
-3. Show the output location and file size
-
-### Option 2: Manual Build
-
+### Build DLL (requires VS C++ tools):
 ```cmd
-dotnet publish -c Release
+cd GetCamerasNative
+build-native.bat
 ```
-
-### 📦 Output Location
-
-The self-contained executable will be created at:
-```
-bin\Release\net10.0-windows\win-x64\publish\GetCameras.exe
-```
-
-**File Details:**
-- 📏 Size: ~36 MB (includes .NET runtime)
-- 🖥️ Platform: Windows x64
-- 📦 Type: Single self-contained executable
 
 ---
 
-## 🚀 Deployment
+## ☕ Java Integration
 
-### Simple Deployment
+### Option 1: Ready-to-Use GUI Sample ⭐ NEW
+```cmd
+cd JavaApp
+build.bat
+run.bat
+```
+Shows cameras in a JOptionPane dialog - see `JavaApp/README.md` for details
 
-1. Build the project using `build.bat` or `dotnet publish -c Release`
-2. Copy `GetCameras.exe` from the publish folder
-3. Distribute the single .exe file
-4. ✅ No installation needed on target machines!
+### Option 2: EXE (Easiest for CLI)
+See Quick Start above
 
-### 📋 System Requirements
-
-**Target Machines:**
-- 🪟 Windows 7 or later (x64)
-- ❌ No .NET installation required
-- 📹 DirectShow compatible cameras
-
-**Development Machine:**
-- 🛠️ .NET 10 SDK
-- 💻 Visual Studio 2026 or compatible IDE
-
----
-
-## 🔗 Integration Examples
-
-### ☕ Java Integration
+### Option 3: DLL (Direct Integration)
+Add JNA: `net.java.dev.jna:jna:5.13.0`
 
 ```java
-import java.io.*;
+import com.sun.jna.*;
 
-public class CameraDetector {
-    public static void main(String[] args) {
-        try {
-            // Execute GetCameras.exe
-            Process process = Runtime.getRuntime().exec("GetCameras.exe");
-
-            // Read output
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Parse: CameraName~~Resolution1~~Resolution2...
-                String[] parts = line.split("~~");
-                String cameraName = parts[0];
-
-                System.out.println("📷 Camera: " + cameraName);
-                for (int i = 1; i < parts.length; i++) {
-                    System.out.println("   📐 " + parts[i]);
-                }
-            }
-
-            process.waitFor();
-            reader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### 🐍 Python Integration
-
-```python
-import subprocess
-
-# Execute and capture output
-result = subprocess.run(['GetCameras.exe'], 
-                       capture_output=True, 
-                       text=True)
-
-# Parse output
-for line in result.stdout.strip().split('\n'):
-    parts = line.split('~~')
-    camera_name = parts[0]
-    resolutions = parts[1:]
-
-    print(f"📷 Camera: {camera_name}")
-    for res in resolutions:
-        print(f"   📐 {res}")
-```
-
-### 💻 PowerShell Integration
-
-```powershell
-# Execute and capture output
-$output = & ".\GetCameras.exe"
-
-# Parse each line
-foreach ($line in $output) {
-    $parts = $line -split "~~"
-    $cameraName = $parts[0]
-    $resolutions = $parts[1..($parts.Length-1)]
-
-    Write-Host "📷 Camera: $cameraName" -ForegroundColor Cyan
-    foreach ($res in $resolutions) {
-        Write-Host "   📐 $res" -ForegroundColor Green
-    }
-}
-```
-
-### 💎 C# / .NET Integration
-
-```csharp
-using System.Diagnostics;
-
-var process = new Process
-{
-    StartInfo = new ProcessStartInfo
-    {
-        FileName = "GetCameras.exe",
-        RedirectStandardOutput = true,
-        UseShellExecute = false,
-        CreateNoWindow = true
-    }
-};
-
-process.Start();
-
-while (!process.StandardOutput.EndOfStream)
-{
-    string line = process.StandardOutput.ReadLine();
-    string[] parts = line.Split("~~");
-    string cameraName = parts[0];
-    string[] resolutions = parts[1..];
-
-    Console.WriteLine($"📷 Camera: {cameraName}");
-    foreach (var res in resolutions)
-    {
-        Console.WriteLine($"   📐 {res}");
-    }
+interface GetCamerasNative extends Library {
+    GetCamerasNative INSTANCE = Native.load("GetCamerasNative", GetCamerasNative.class);
+    String GetCameras();
 }
 
-process.WaitForExit();
+// Use:
+String cameras = GetCamerasNative.INSTANCE.GetCameras();
+```
+
+Complete examples: `JavaApp/CameraListApp.java` or `GetCamerasNative/JavaExample.java`
+
+---
+
+## 📊 EXE vs DLL
+
+| Feature | EXE | DLL |
+|---------|-----|-----|
+| Size | 36 MB | 50 KB ✅ |
+| Network | May block | OK ✅ |
+| Build | Done ✅ | Required |
+| Java | Process | JNA ✅ |
+
+**Use EXE if:** Files allowed, want zero setup  
+**Use DLL if:** EXE blocked, want small size
+
+---
+
+## 📁 Project Structure
+
+```
+get-cameras/
+├── GetCameras/              # .NET EXE
+│   ├── build.bat
+│   └── bin/.../GetCameras.exe
+├── GetCamerasNative/        # Native DLL  
+│   ├── build-native.bat
+│   ├── JavaExample.java
+│   └── GetCamerasNative.dll
+├── JavaApp/                 # Java GUI Sample ⭐ NEW
+│   ├── CameraListApp.java
+│   ├── build.bat
+│   ├── run.bat
+│   └── README.md
+└── README.md
 ```
 
 ---
 
-## 🛠️ Project Structure
+## 🛠️ Troubleshooting
 
-```
-GetCameras/
-├── 📄 CameraInfo.cs         # Core camera enumeration logic
-├── 📄 Program.cs            # Application entry point
-├── 📄 GetCameras.csproj     # Project configuration
-├── 📄 build.bat             # Build script
-└── 📄 README.md             # This file
-```
+**No cameras:** Check drivers, close other apps using camera  
+**Build DLL fails:** Install VS C++ tools (see build-native.bat)  
+**Java UnsatisfiedLink:** Put DLL in same directory as JAR
 
 ---
 
-## 🔍 Troubleshooting
+## 🎯 Quick Decision
 
-### ❌ "No cameras found"
-
-**Possible Solutions:**
-- 🔌 Check if camera is physically connected
-- 🔄 Reconnect the camera
-- 💾 Verify camera drivers are installed
-- 🚫 Close other applications using the camera
-- 🔁 Restart your computer
-
-### ⚠️ Antivirus Warnings
-
-Self-contained executables may trigger false positives.
-
-**Solutions:**
-- ✅ Add to antivirus whitelist
-- 🔏 Code sign the executable (recommended for production)
-- 📝 Verify the source and build it yourself
-
-### 🔒 Access Denied Errors
-
-Some cameras may require elevated privileges.
-
-**Solution:**
-- 🛡️ Right-click `GetCameras.exe`
-- ⬆️ Select "Run as Administrator"
+✅ **Use EXE** - Already built, works now  
+✅ **Use DLL** - If EXE blocked on network
 
 ---
 
-## 📝 Technical Details
-
-### Dependencies
-
-- **AForge.Video.DirectShow** (2.2.5) - DirectShow wrapper for camera access
-- **.NET 10 Runtime** (embedded in published executable)
-
-### How It Works
-
-1. 🔍 Uses DirectShow API to enumerate video capture devices
-2. 📊 Queries each device for supported video capabilities
-3. 📋 Formats output as: `CameraName~~Resolution1~~Resolution2...`
-4. 💬 Outputs to stdout for easy integration
-
----
-
-## 📜 License
-
-This project is provided as-is for educational and commercial use.
-
----
-
-## 🤝 Contributing
-
-Found a bug or want to contribute? Feel free to:
-
-1. 🐛 Report issues
-2. 💡 Suggest features
-3. 🔧 Submit improvements
-
----
-
-## 📞 Support
-
-For questions or issues:
-
-1. 📖 Check this README
-2. 🔍 Review troubleshooting section
-3. 🧪 Test with different cameras
-4. 📝 Check Windows camera drivers
-
----
-
-## 🎓 Use Cases
-
-- 🎥 **Video Conferencing Apps** - Detect available cameras for user selection
-- 🤖 **Automation Scripts** - Verify camera availability in CI/CD pipelines
-- 🎬 **Streaming Software** - List camera options for configuration
-- 🔧 **System Diagnostics** - Troubleshoot camera detection issues
-- 📱 **IoT Projects** - Camera enumeration for edge devices
-- 🎮 **Game Development** - Detect webcams for player tracking
-
----
-
-## 🌟 Why GetCameras?
-
-✅ **Lightweight** - No bloated dependencies  
-✅ **Fast** - Instant results  
-✅ **Reliable** - Uses native Windows APIs  
-✅ **Portable** - Single executable  
-✅ **Developer-Friendly** - Easy to integrate  
-✅ **Free** - Open source and free to use  
-
----
-
-Made with ❤️ for developers who need simple camera enumeration
-
-**Version:** 1.0  
 **Platform:** Windows x64  
-**.NET Version:** 10.0  
-**Build Date:** 2026
+**Repo:** https://github.com/KinithHettiarachchi/get-cameras

@@ -1,0 +1,27 @@
+﻿# Build outputs
+**/bin/
+**/obj/
+*.exe
+*.dll
+*.pdb
+*.lib
+*.exp
+*.obj
+
+# Keep published exe
+!GetCameras/bin/Release/net10.0-windows/win-x64/publish/GetCameras.exe
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+
+# Build artifacts
+*.log
+*.tlog
+*.cache
+
+# Temporary files
+*.tmp
+*.temp

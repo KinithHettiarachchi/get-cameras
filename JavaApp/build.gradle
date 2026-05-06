@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.camera'
+version = '1.0.0'
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JNA for native DLL access
+    implementation 'net.java.dev.jna:jna:5.13.0'
+}
+
+application {
+    mainClass = 'CameraListApp'
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'CameraListApp'
+        )
+    }
+
+    // Create fat JAR with all dependencies
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Task to run the application
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'CameraListApp'
+}
